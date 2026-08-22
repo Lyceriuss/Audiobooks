@@ -1,0 +1,17 @@
+services:
+  audiobook-feed:
+    build: .
+    container_name: audiobook-feed
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./books:/app/audiobooks:ro
+
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    container_name: audiobook-tunnel
+    restart: unless-stopped
+    command: tunnel --no-autoupdate --url http://audiobook-feed:8000
+    depends_on:
+      - audiobook-feed
